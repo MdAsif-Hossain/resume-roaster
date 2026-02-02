@@ -36,11 +36,14 @@ export default async function handler(req, res) {
             return res.status(500).json({ error: 'Missing COMET_API_KEY in environment' });
         }
 
-        console.log("🤖 Calling OpenAI...");
+        console.log("🤖 Calling CometAPI...");
+        console.log("API Key present:", apiKey ? "Yes (length: " + apiKey.length + ")" : "No");
+
         const systemPrompt = `You are a toxic, elite Hiring Manager. Based on the job description, generate a funny, mean roast about a generic resume.
 Return valid JSON only: { "roast": "your roast here (2-3 paragraphs)", "missingKeywords": ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5"] }`;
 
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        // CometAPI endpoint (OpenAI-compatible)
+        const response = await fetch('https://api.cometapi.com/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

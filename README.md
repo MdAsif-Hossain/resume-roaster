@@ -1,73 +1,108 @@
-# React + TypeScript + Vite
+# Resume Roaster 💀
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> **"Destroy your career before a recruiter does."**
 
-Currently, two official plugins are available:
+Resume Roaster is a full-stack web application that uses AI to provide brutally honest, comedic feedback on resumes. Designed with a "Neon Brutalism" aesthetic, it combines a high-performance React frontend with serverless Node.js functions to analyze PDF resumes against specific job descriptions.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+![Project Status](https://img.shields.io/badge/status-active-success.svg)
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
-## React Compiler
+## 🚀 Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+*   **AI-Powered Analysis**: Utilizes Large Language Models (LLMs) via CometAPI/OpenAI to generate context-aware critiques.
+*   **PDF Parsing Engine**: Custom serverless implementation to extract text from PDF documents on the fly.
+*   **Neon Brutalism UI**: A distinctive, high-contrast design language using Tailwind CSS v4 variables and custom animations.
+*   **Real-time Feedback**: Interactive "Terminal" style console with typewriter effects for roast delivery.
+*   **Serverless Architecture**: Built on Vercel Serverless Functions for scalable, cost-effective backend logic.
 
-## Expanding the ESLint configuration
+## 🛠️ Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Frontend
+*   **Framework**: React 19 + Vite
+*   **Language**: TypeScript
+*   **Styling**: Tailwind CSS v4 (using modern CSS variables @theme configuration)
+*   **Icons**: Lucide React
+*   **Animations**: Framer Motion
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Backend
+*   **Runtime**: Node.js (Vercel Serverless Functions)
+*   **AI Integration**: OpenAI SDK (configured for CometAPI)
+*   **PDF Processing**: `pdf-parse`
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### DevOps & Tooling
+*   **Linting**: ESLint + TypeScript-ESLint
+*   **Deployment**: Vercel
+*   **Package Manager**: npm
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## ⚡ Getting Started
+
+Follow these steps to set up the project locally.
+
+### Prerequisites
+*   Node.js (v18 or higher)
+*   npm or yarn
+
+### Installation
+
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/yourusername/resume-roaster.git
+    cd resume-roaster
+    ```
+
+2.  **Install dependencies**
+    ```bash
+    npm install
+    ```
+
+3.  **Environment Setup**
+    Create a `.env` file in the root directory and add your API key:
+    ```env
+    COMET_API_KEY=your_api_key_here
+    ```
+
+4.  **Run Locally**
+    Start the full-stack development environment (Frontend + Serverless Functions):
+    ```bash
+    npm run dev:full
+    ```
+    The application will be available at `http://localhost:3000`.
+
+## 📂 Project Structure
+
+```
+resume-roaster/
+├── api/                # Serverless functions (Backend)
+│   └── roast.js        # Main API endpoint for handling roasts
+├── src/                # Frontend source code
+│   ├── components/     # Reusable React components (FileUpload, JobInput, etc.)
+│   ├── App.tsx         # Main application logic
+│   └── index.css       # Global styles & Tailwind v4 config
+├── public/             # Static assets
+└── vercel.json         # Vercel routing and function configuration
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🔮 Future Improvements
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+*   **Resume Scoring**: Add a numerical score (0-100) based on ATS (Applicant Tracking System) compatibility.
+*   **History Mode**: Save previous roasts using local storage or a database.
+*   **Direct PDF Export**: Allow users to download their "Roast Report".
+*   **Multi-Model Support**: Toggle between different roast personas (e.g., "Passive Aggressive HR", "Tech Bro", "Boomer Boss").
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1.  Fork the Project
+2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4.  Push to the Branch (`git push origin feature/AmazingFeature`)
+5.  Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+*Built with toxicity and ❤️ by Asif Hossain.*
