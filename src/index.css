@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+@theme {
+    --color-background: #0f172a;
+    --color-error: #ef4444;
+    --color-terminal: #22c55e;
+
+    --font-mono: "Fira Code", monospace;
+    --font-sans: "Inter", sans-serif;
+
+    --animate-shake: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
+
+    @keyframes shake {
+
+        10%,
+        90% {
+            transform: translate3d(-1px, 0, 0);
+        }
+
+        20%,
+        80% {
+            transform: translate3d(2px, 0, 0);
+        }
+
+        30%,
+        50%,
+        70% {
+            transform: translate3d(-4px, 0, 0);
+        }
+
+        40%,
+        60% {
+            transform: translate3d(4px, 0, 0);
+        }
+    }
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;700&display=swap');
+
+body {
+    @apply bg-background text-zinc-100 font-sans;
+}
+
+::selection {
+    @apply bg-error text-white;
+}
