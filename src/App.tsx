@@ -65,12 +65,19 @@ function App() {
         }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Server crashed laughing at you.');
+      const responseText = await response.text();
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (e) {
+        console.error("Failed to parse JSON:", responseText);
+        throw new Error(`Server Error: ${responseText.slice(0, 100)}...`);
       }
 
-      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || 'Server crashed laughing at you.');
+      }
+
       setResult(data);
 
     } catch (error: any) {
