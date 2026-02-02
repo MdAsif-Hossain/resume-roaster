@@ -4,10 +4,12 @@ import { FileUpload } from './components/FileUpload';
 import { JobInput } from './components/JobInput';
 import { ToxicButton } from './components/ToxicButton';
 import { RoastConsole } from './components/RoastConsole';
+import { SuggestionConsole } from './components/SuggestionConsole';
 
 interface RoastResult {
   roast: string;
   missingKeywords: string[];
+  suggestions: { title: string; content: string }[];
 }
 
 function App() {
@@ -143,12 +145,23 @@ function App() {
         </div>
 
         {/* Right Column: Output */}
-        <div className="h-[600px] lg:h-auto min-h-[500px]">
-          <RoastConsole
-            result={result}
-            isLoading={isLoading}
-            loadingText={loadingText}
-          />
+        <div className="flex flex-col gap-8">
+          {/* Roast Console */}
+          <div className="h-[500px]">
+            <RoastConsole
+              result={result}
+              isLoading={isLoading}
+              loadingText={loadingText}
+            />
+          </div>
+
+          {/* Suggestion Console */}
+          <div className="h-[400px]">
+            <SuggestionConsole
+              suggestions={result?.suggestions}
+              isLoading={isLoading}
+            />
+          </div>
         </div>
 
       </main>
