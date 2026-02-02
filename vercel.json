@@ -6,7 +6,7 @@
         }
     ],
     "functions": {
-        "api/roast.ts": {
+        "api/roast.js": {
             "maxDuration": 60
         }
     }

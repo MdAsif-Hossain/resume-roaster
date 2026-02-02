@@ -1,9 +1,8 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+// Plain JavaScript serverless function for Vercel
+export default async function handler(req, res) {
     console.log("🔥 ROAST API INVOKED - Method:", req.method);
 
-    // CORS
+    // CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -27,8 +26,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         console.log("📄 Got resume data, length:", resumeBase64.length);
 
-        // Skip PDF parsing for now - just use the base64 length as a placeholder
-        const resumeText = `[Resume uploaded: ${resumeBase64.length} characters of base64 data]`;
+        // For now, skip PDF parsing - just acknowledge the upload
+        const resumeText = `[Resume uploaded: ${resumeBase64.length} characters]`;
 
         // Check API key
         const apiKey = process.env.COMET_API_KEY;
@@ -38,8 +37,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
 
         console.log("🤖 Calling OpenAI...");
-        const systemPrompt = `You are a toxic, elite Hiring Manager. Based on the job description provided, generate a funny roast about a generic resume. Be mean but funny.
-Return valid JSON only: { "roast": "your roast here", "missingKeywords": ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5"] }`;
+        const systemPrompt = `You are a toxic, elite Hiring Manager. Based on the job description, generate a funny, mean roast about a generic resume.
+Return valid JSON only: { "roast": "your roast here (2-3 paragraphs)", "missingKeywords": ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5"] }`;
 
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
@@ -51,7 +50,7 @@ Return valid JSON only: { "roast": "your roast here", "missingKeywords": ["keywo
                 model: 'gpt-4o',
                 messages: [
                     { role: 'system', content: systemPrompt },
-                    { role: 'user', content: `JOB DESCRIPTION:\n${jobDescription}\n\n(Resume was uploaded but parsing is being debugged)` }
+                    { role: 'user', content: `JOB DESCRIPTION:\n${jobDescription}\n\nNote: Resume parsing is being debugged, so roast based on the job requirements.` }
                 ],
                 response_format: { type: 'json_object' },
             }),
@@ -61,7 +60,7 @@ Return valid JSON only: { "roast": "your roast here", "missingKeywords": ["keywo
 
         if (!response.ok) {
             const errorText = await response.text();
-            console.log("❌ OpenAI error:", errorText);
+            console.log("❌ OpenAI error:", errorText.slice(0, 300));
             return res.status(500).json({ error: 'AI request failed', details: errorText.slice(0, 300) });
         }
 
@@ -77,7 +76,7 @@ Return valid JSON only: { "roast": "your roast here", "missingKeywords": ["keywo
         console.log("✅ Returning result");
         return res.status(200).json(result);
 
-    } catch (error: any) {
+    } catch (error) {
         console.error("🔥 ERROR:", error.message);
         return res.status(500).json({ error: error.message });
     }
