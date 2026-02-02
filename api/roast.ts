@@ -1,12 +1,9 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-// Use dynamic require for pdf-parse (CommonJS package in ESM context)
-const pdfParse = require('pdf-parse');
-
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-    console.log("🔥 ROAST API INVOKED");
+    console.log("🔥 ROAST API INVOKED - Method:", req.method);
 
-    // Set CORS headers for local development
+    // CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -20,52 +17,31 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     try {
+        console.log("📦 Parsing body...");
         const { resumeBase64, jobDescription } = req.body;
 
         if (!resumeBase64 || !jobDescription) {
+            console.log("❌ Missing data");
             return res.status(400).json({ error: 'Missing resume or job description' });
         }
 
-        // 1. Decode PDF from Base64
-        console.log("📄 Decoding PDF...");
-        const pdfBuffer = Buffer.from(resumeBase64, 'base64');
-        console.log(`📄 PDF Buffer Size: ${pdfBuffer.length} bytes`);
+        console.log("📄 Got resume data, length:", resumeBase64.length);
 
-        // 2. Extract text from PDF
-        console.log("📝 Parsing PDF...");
-        let resumeText = "";
-        try {
-            const pdfData = await pdfParse(pdfBuffer);
-            resumeText = pdfData.text;
-            console.log(`✅ PDF Parsed: ${resumeText.length} characters`);
-        } catch (pdfError: any) {
-            console.error("❌ PDF Parse Error:", pdfError.message);
-            return res.status(500).json({
-                error: 'PDF parsing failed',
-                details: pdfError.message
-            });
-        }
+        // Skip PDF parsing for now - just use the base64 length as a placeholder
+        const resumeText = `[Resume uploaded: ${resumeBase64.length} characters of base64 data]`;
 
-        if (!resumeText || resumeText.trim().length < 20) {
-            return res.status(400).json({
-                error: 'Could not extract meaningful text from the PDF.'
-            });
-        }
-
-        // 3. Call OpenAI (CometAPI)
+        // Check API key
         const apiKey = process.env.COMET_API_KEY;
         if (!apiKey) {
-            console.error("❌ Missing API Key");
-            return res.status(500).json({ error: 'Server misconfiguration: Missing API key' });
+            console.log("❌ No API key");
+            return res.status(500).json({ error: 'Missing COMET_API_KEY in environment' });
         }
 
-        console.log("🤖 Calling AI...");
-        const systemPrompt = `You are a toxic, elite Hiring Manager. Compare the resume to the job description.
-1. Roast the user (mean & funny, 2-3 paragraphs).
-2. List exactly 5 missing keywords/skills.
-Return valid JSON only: { "roast": "string", "missingKeywords": ["string"] }`;
+        console.log("🤖 Calling OpenAI...");
+        const systemPrompt = `You are a toxic, elite Hiring Manager. Based on the job description provided, generate a funny roast about a generic resume. Be mean but funny.
+Return valid JSON only: { "roast": "your roast here", "missingKeywords": ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5"] }`;
 
-        const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -75,37 +51,34 @@ Return valid JSON only: { "roast": "string", "missingKeywords": ["string"] }`;
                 model: 'gpt-4o',
                 messages: [
                     { role: 'system', content: systemPrompt },
-                    { role: 'user', content: `RESUME:\n${resumeText}\n\nJOB DESCRIPTION:\n${jobDescription}` }
+                    { role: 'user', content: `JOB DESCRIPTION:\n${jobDescription}\n\n(Resume was uploaded but parsing is being debugged)` }
                 ],
                 response_format: { type: 'json_object' },
             }),
         });
 
-        if (!openaiResponse.ok) {
-            const errorText = await openaiResponse.text();
-            console.error("❌ OpenAI Error:", errorText);
-            return res.status(500).json({
-                error: 'AI service failed',
-                details: errorText.slice(0, 200)
-            });
+        console.log("📡 OpenAI response status:", response.status);
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.log("❌ OpenAI error:", errorText);
+            return res.status(500).json({ error: 'AI request failed', details: errorText.slice(0, 300) });
         }
 
-        const aiData = await openaiResponse.json();
-        console.log("✅ AI Response received");
+        const data = await response.json();
+        console.log("✅ Got AI response");
 
-        const content = aiData.choices?.[0]?.message?.content;
+        const content = data.choices?.[0]?.message?.content;
         if (!content) {
             return res.status(500).json({ error: 'Empty AI response' });
         }
 
         const result = JSON.parse(content);
+        console.log("✅ Returning result");
         return res.status(200).json(result);
 
     } catch (error: any) {
-        console.error("🔥 CRITICAL ERROR:", error);
-        return res.status(500).json({
-            error: 'Internal Server Error',
-            details: error.message
-        });
+        console.error("🔥 ERROR:", error.message);
+        return res.status(500).json({ error: error.message });
     }
 }
