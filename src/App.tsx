@@ -13,6 +13,8 @@ interface RoastResult {
 function App() {
   const [file, setFile] = useState<File | null>(null);
   const [jobDescription, setJobDescription] = useState('');
+  const [targetCountry, setTargetCountry] = useState('Global/Remote');
+  const [currentLocation, setCurrentLocation] = useState('Bangladesh');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<RoastResult | null>(null);
   const [loadingText, setLoadingText] = useState('INITIALIZING...');
@@ -29,6 +31,11 @@ function App() {
   const handleRoast = async () => {
     if (!file || !jobDescription) {
       alert("UPLOAD THE RESUME AND JOB DESCRIPTION, YOU IDIOT.");
+      return;
+    }
+
+    if (!currentLocation) {
+      alert("TELL ME WHERE YOU ARE SO I CAN LAUGH AT YOUR COMMUTE.");
       return;
     }
 
@@ -62,6 +69,8 @@ function App() {
         body: JSON.stringify({
           resumeBase64: base64,
           jobDescription,
+          targetCountry,
+          currentLocation
         }),
       });
 
@@ -116,7 +125,14 @@ function App() {
             <h2 className="text-xl font-bold mb-6 text-zinc-400 font-mono border-l-4 border-error pl-4">
               STEP 2: THE UNREACHABLE DREAM
             </h2>
-            <JobInput value={jobDescription} onChange={setJobDescription} />
+            <JobInput
+              jobDescription={jobDescription}
+              onJobDescriptionChange={setJobDescription}
+              targetCountry={targetCountry}
+              onTargetCountryChange={setTargetCountry}
+              currentLocation={currentLocation}
+              onCurrentLocationChange={setCurrentLocation}
+            />
           </div>
 
           <ToxicButton

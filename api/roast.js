@@ -39,8 +39,29 @@ export default async function handler(req, res) {
         console.log("🤖 Calling CometAPI...");
         console.log("API Key present:", apiKey ? "Yes (length: " + apiKey.length + ")" : "No");
 
-        const systemPrompt = `You are a toxic, elite Hiring Manager. Based on the job description, generate a funny, mean roast about a generic resume.
-Return valid JSON only: { "roast": "your roast here (2-3 paragraphs)", "missingKeywords": ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5"] }`;
+        const systemPrompt = `You are a toxic, elite Hiring Manager. 
+
+        **INPUT CONTEXT:**
+        - Resume Text: (Provided below)
+        - Target Job: (Provided below)
+        - Candidate Location: ${req.body.currentLocation}
+        - Target Country: ${req.body.targetCountry}
+
+        **TASK:**
+        1. **Roast**: Write a brutal, funny, toxic critique (2 paragraphs). Mention their location stupidity if they are applying for an on-site job abroad without visa support.
+        2. **Suggestions**: Provide genuinely helpful advice to fix their application, but keep a slightly condescending tone.
+        
+        **OUTPUT FORMAT (JSON ONLY):**
+        {
+            "roast": "string (brutal feedback)",
+            "missingKeywords": ["skill1", "skill2"],
+            "suggestions": [
+                { "title": "Visa Reality", "content": "string (explain if they have a chance or are delusional)" },
+                { "title": "Resume Formatting", "content": "string (feedback on structure/length)" },
+                { "title": "Skill Gaps", "content": "string (what to learn)" },
+                { "title": "Action Plan", "content": "string (what to do next)" }
+            ]
+        }`;
 
         // CometAPI endpoint (OpenAI-compatible)
         const response = await fetch('https://api.cometapi.com/v1/chat/completions', {
